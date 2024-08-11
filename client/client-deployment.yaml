@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+      - name: client
+        image: codewithcrazy/t-client:latest
+        ports:
+        - containerPort: 3000  # The port where the client app is running inside the container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-service
+spec:
+  selector:
+    app: client
+  ports:
+    - protocol: TCP
+      port: 80          # External port to access the service
+      targetPort: 3000  # Port on which the client app is listening inside the container
+      nodePort: 30007   # Optional NodePort for accessing the service externally
+  type: NodePort        # Expose the service as NodePort

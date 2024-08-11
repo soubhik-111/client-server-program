@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server2-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server2
+  template:
+    metadata:
+      labels:
+        app: server2
+    spec:
+      containers:
+      - name: server2
+        image: codewithcrazy/t-server2:latest
+        ports:
+        - containerPort: 3002
+        volumeMounts:
+        - name: log-volume
+          mountPath: /usr/src/app/server2.log
+      volumes:
+      - name: log-volume
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server2-service
+spec:
+  selector:
+    app: server2
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002
+      nodePort: 30009   # Optional NodePort for external access
+  type: NodePort 
