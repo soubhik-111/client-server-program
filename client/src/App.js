@@ -1,35 +1,39 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import './App.css';
 import sendRequest from './request';
-
-let timer = null;
 
 function App() {
 
   const [resdata, setResData] = useState([]);
-  const [isStarted, setIsStarted] = useState(false);
+  const [isStarted, setIsStarted] = useState(true);
 
-  useEffect(() => {
-    handleStart();
-    return handleStop;
-  },[])
+  const timerRef = useRef(null);
 
-  const handleStart = () => {
-    timer = setInterval(requestData,1000);
-    setIsStarted(true);
-  }
-
-  const handleStop = () => {
-    clearInterval(timer);
-    setIsStarted(false);
-  }
-
-  const requestData = async () => {
+  const requestData = useCallback(async () => {
     console.log("Requesting Data.....");
     const timeStamp = getTimeStamp();
     const data = await sendRequest(timeStamp);
-    setResData((prevData) => [data, ...prevData])
-  }
+    setResData((prevData) => [data, ...prevData]);
+  }, []); // Empty dependency array means this function doesn't change
+
+  useEffect(() => {
+    if (isStarted) {
+      timerRef.current = setInterval(requestData, 1000);
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isStarted, requestData]); // Dependency on isStarted and requestData
+
+  const handleStart = () => {
+    setIsStarted(true);
+  };
+
+  const handleStop = () => {
+    setIsStarted(false);
+  };
 
   const getTimeStamp = () => {
     const now = new Date();
