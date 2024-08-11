@@ -1,4 +1,4 @@
 export const servers = [
-    'http://192.168.49.2:30008/',
-    'http://192.168.49.2:30009/'
+    'http://server1-service:3001/',
+    'http://server2-service:3002/'
 ];
