@@ -1,9 +1,12 @@
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors')
+const spdy = require('spdy');
+
 const app = express();
 
 const PORT = process.env.PORT || 3001;
+const CERT_DIR = `${__dirname}/cert`;
 
 app.use(cors())
 
@@ -39,6 +42,15 @@ app.get('/:msg', (req, res) => {
     fs.appendFileSync('server1.log', logResponse);
 });
 
-app.listen(PORT, () => {
-    console.log(`Server 1 is running on port ${PORT}`);
+const server = spdy.createServer(
+    {
+      key: fs.readFileSync(`${CERT_DIR}/server.key`),
+      cert: fs.readFileSync(`${CERT_DIR}/server.cert`),
+    },
+    app
+);
+
+server.listen(PORT, () => {
+  console.log(`Server 1 listening on port ${PORT}`);
+  console.log('SSL Enabled');
 });
