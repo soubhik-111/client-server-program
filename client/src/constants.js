@@ -1,4 +1,4 @@
 export const servers = [
-    'https://localhost:3001/',
-    'https://localhost:3002/'
+    process.env.REACT_APP_SERVER1_URL,
+    process.env.REACT_APP_SERVER2_URL
 ];
