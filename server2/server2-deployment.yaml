@@ -13,17 +13,28 @@ spec:
         app: server2
     spec:
       containers:
-      - name: server2
+      - name: server2-container
         image: codewithcrazy/t-server2:latest
         ports:
-        - containerPort: 3002
+        - containerPort: 30009
+        # livenessProbe:
+        #   httpGet:
+        #     path: /hi
+        #     port: 30009
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /hi
+        #     port: 30009
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 10
         volumeMounts:
-        - name: log-volume
-          mountPath: /usr/src/app/server2.log
+        - name: logs
+          mountPath: /app/logs
       volumes:
-      - name: log-volume
+      - name: logs
         emptyDir: {}
-
 ---
 apiVersion: v1
 kind: Service
@@ -34,7 +45,7 @@ spec:
     app: server2
   ports:
     - protocol: TCP
-      port: 3002
+      port: 80
       targetPort: 3002
-      nodePort: 30009   # Optional NodePort for external access
-  type: NodePort 
+      nodePort: 30009
+  type: NodePort

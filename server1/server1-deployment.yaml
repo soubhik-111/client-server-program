@@ -13,17 +13,34 @@ spec:
         app: server1
     spec:
       containers:
-      - name: server1
+      - name: server1-container
         image: codewithcrazy/t-server1:latest
         ports:
-        - containerPort: 3001
+        - containerPort: 3001  # Match this with the actual port used by your application
+        # livenessProbe:
+        #   httpGet:
+        #     path: /hi
+        #     port: 3001  # Ensure this matches the actual listening port
+        #     scheme: HTTPS  # Use HTTPS since your server expects it
+        #   initialDelaySeconds: 15
+        #   timeoutSeconds: 5
+        #   periodSeconds: 10
+        #   failureThreshold: 3
+        # readinessProbe:
+        #   httpGet:
+        #     path: /hi
+        #     port: 3001  # Ensure this matches the actual listening port
+        #     scheme: HTTPS  # Use HTTPS since your server expects it
+        #   initialDelaySeconds: 15
+        #   timeoutSeconds: 5
+        #   periodSeconds: 10
+        #   failureThreshold: 3
         volumeMounts:
-        - name: log-volume
-          mountPath: /usr/src/app/server1.log
+        - name: logs
+          mountPath: /app/logs
       volumes:
-      - name: log-volume
+      - name: logs
         emptyDir: {}
-
 ---
 apiVersion: v1
 kind: Service
@@ -34,7 +51,7 @@ spec:
     app: server1
   ports:
     - protocol: TCP
-      port: 3001
+      port: 80
       targetPort: 3001
-      nodePort: 30008 
-  type: NodePort 
+      nodePort: 30008
+  type: NodePort
